@@ -32,7 +32,7 @@
 				</div>
 			</div>
 		</form>
-		<div class="col-sm" id="respuesta"></div>
+		<div class="container-fluid" id="respuesta"></div>
 	</div>
 	
 	<script src="jquery/jquery-3.4.1.min.js"></script>

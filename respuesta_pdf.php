@@ -5,13 +5,30 @@ require('fpdf/fpdf.php');
 
 $actual_link = dirname((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]")."/";
 
-if(isset($_POST["resp_nombres"])){ $resp_nombres = utf8_decode($_POST["resp_nombres"]); }else{ $resp_nombres = ""; }
+if(isset($_POST["intro_SPE"])){ $intro_SPE = utf8_decode($_POST["intro_SPE"]); }else{ $intro_SPE = ""; }
+$intro_SPE = str_replace("<br><br>", "\n", $intro_SPE); 
+if(isset($_POST["intro_4B"])){ $intro_4B = utf8_decode($_POST["intro_4B"]); }else{ $intro_4B = ""; }
+if(isset($_POST["titulo_01"])){ $titulo_01 = utf8_decode($_POST["titulo_01"]); }else{ $titulo_01 = ""; }
+if(isset($_POST["titulo_01_des_01"])){ $titulo_01_des_01 = utf8_decode($_POST["titulo_01_des_01"]); }else{ $titulo_01_des_01 = ""; }
+if(isset($_POST["titulo_01_des_02"])){ $titulo_01_des_02 = utf8_decode($_POST["titulo_01_des_02"]); }else{ $titulo_01_des_02 = ""; }
+$titulo_01_des_02 = str_replace("<br><br>", "\n", $titulo_01_des_02); 
+if(isset($_POST["titulo_02"])){ $titulo_02 = utf8_decode($_POST["titulo_02"]); }else{ $titulo_02 = ""; }
+if(isset($_POST["titulo_02_des"])){ $titulo_02_des = utf8_decode($_POST["titulo_02_des"]); }else{ $titulo_02_des = ""; }
+
+if(isset($_POST["resp_nombres"])){ $resp_nombres = utf8_decode(strtoupper($_POST["resp_nombres"])); }else{ $resp_nombres = ""; }
 if(isset($_POST["resp_docu"])){ $resp_docu = utf8_decode($_POST["resp_docu"]); }else{ $resp_docu = ""; }
 if(isset($_POST["resp_fech_prueba"])){ $resp_fech_prueba = utf8_decode($_POST["resp_fech_prueba"]); }else{ $resp_fech_prueba = ""; }
 if(isset($_POST["resp_prestador"])){ $resp_prestador = utf8_decode($_POST["resp_prestador"]); }else{ $resp_prestador = ""; }
+
+if(isset($_POST["num_estilo"])){ $num_estilo = utf8_decode($_POST["num_estilo"]); }else{ $num_estilo = ""; }
+if(isset($_POST["estilo"])){ $estilo = utf8_decode($_POST["estilo"]); }else{ $estilo = ""; }
+if(isset($_POST["estilo_desc"])){ $estilo_desc = utf8_decode($_POST["estilo_desc"]); }else{ $estilo_desc = ""; }
+if(isset($_POST["num_opuesto"])){ $num_opuesto = utf8_decode($_POST["num_opuesto"]); }else{ $num_opuesto = ""; }
+if(isset($_POST["opuesto"])){ $opuesto = utf8_decode($_POST["opuesto"]); }else{ $opuesto = ""; }
+if(isset($_POST["opuesto_desc"])){ $opuesto_desc = utf8_decode($_POST["opuesto_desc"]); }else{ $opuesto_desc = ""; }
 if(isset($_POST["num_perfil"])){ $num_perfil = utf8_decode($_POST["num_perfil"]); }else{ $num_perfil = ""; }
-if(isset($_POST["desc_perfil"])){ $desc_perfil = utf8_decode($_POST["desc_perfil"]); }else{ $desc_perfil = ""; }
 if(isset($_POST["perfil"])){ $perfil = utf8_decode($_POST["perfil"]); }else{ $perfil = ""; }
+if(isset($_POST["perfil_desc"])){ $perfil_desc = utf8_decode($_POST["perfil_desc"]); }else{ $perfil_desc = ""; }
 if(isset($_POST["ei"])){ $ei = utf8_decode($_POST["ei"]); }else{ $ei = ""; }
 if(isset($_POST["ai"])){ $ai = utf8_decode($_POST["ai"]); }else{ $ai = ""; }
 if(isset($_POST["ad"])){ $ad = utf8_decode($_POST["ad"]); }else{ $ad = ""; }
@@ -33,183 +50,237 @@ if(isset($_POST["auto_ai"])){ $auto_ai = utf8_decode($_POST["auto_ai"]); }else{ 
 if(isset($_POST["auto_ad"])){ $auto_ad = utf8_decode($_POST["auto_ad"]); }else{ $auto_ad = ""; }
 if(isset($_POST["auto_ed"])){ $auto_ed = utf8_decode($_POST["auto_ed"]); }else{ $auto_ed = ""; }
 
-$titulo_01 = utf8_decode("Estilos de pensamiento - Neuro fortaleza y Neuro debilidad");
-$titulo_02 = utf8_decode("Perfil de competencia");
-$titulo_03 = utf8_decode("Competencias desarrolladas");
-
 class PDF extends FPDF
 {
-// Page header
-function Header()
-{
-	// Logo Unidad
-	$this->Image('images/logo-spe.png',10,10,50);
-	// Logo MinTrabajo
-	$this->Image('images/logo-mintrabajo.png',119,10,80);
-	// Line break
-	$this->Ln(20);
-}
+	// Page header
+	function Header()
+	{
+		// Logo Unidad
+		$this->Image('images/logo-spe.png',10,10,50);
+		// Logo MinTrabajo
+		$this->Image('images/logo-mintrabajo.png',119,10,80);
+		// Line break
+		$this->Ln(20);
+	}
 
-// Page footer
-function Footer()
-{
-	// Position at 1.5 cm from bottom
-	$this->SetY(-15);
-	// Arial italic 8
-	$this->SetFont('Arial','I',8);
-	// Page number
-	$this->Cell(0,10,utf8_decode('Página ').$this->PageNo().'/{nb}',0,0,'C');
-}
+	// Page footer
+	function Footer()
+	{
+		// Position at 1.5 cm from bottom
+		$this->SetY(-15);
+		// Arial italic 8
+		$this->SetFont('Arial','I',8);
+		// Page number
+		$this->Cell(0,10,utf8_decode('Página ').$this->PageNo().'/{nb}',0,0,'C');
+	}
 
-function drawTextBox($strText, $w, $h, $align='L', $valign='T', $border=true)
-{
-    $xi=$this->GetX();
-    $yi=$this->GetY();
-    
-    $hrow=$this->FontSize;
-    $textrows=$this->drawRows($w,$hrow,$strText,0,$align,0,0,0);
-    $maxrows=floor($h/$this->FontSize);
-    $rows=min($textrows,$maxrows);
+	function drawTextBox($strText, $w, $h, $align='L', $valign='T', $border=true)
+	{
+		$xi=$this->GetX();
+		$yi=$this->GetY();
+		
+		$hrow=$this->FontSize;
+		$hrow=$hrow+1;
+		$textrows=$this->drawRows($w,$hrow,$strText,0,$align,0,0,0);
+		$maxrows=floor($h/$this->FontSize);
+		$rows=min($textrows,$maxrows);
 
-    $dy=0;
-    if (strtoupper($valign)=='M')
-        $dy=($h-$rows*$this->FontSize)/2;
-    if (strtoupper($valign)=='B')
-        $dy=$h-$rows*$this->FontSize;
+		$dy=0;
+		if (strtoupper($valign)=='M')
+			$dy=($h-$rows*$this->FontSize)/2;
+		if (strtoupper($valign)=='B')
+			$dy=$h-$rows*$this->FontSize;
 
-    $this->SetY($yi+$dy);
-    $this->SetX($xi);
+		$this->SetY($yi+$dy);
+		$this->SetX($xi);
 
-    $this->drawRows($w,$hrow,$strText,0,$align,false,$rows,1);
+		$this->drawRows($w,$hrow,$strText,0,$align,false,$rows,1);
 
-    if ($border)
-        $this->Rect($xi,$yi,$w,$h);
-}
+		if ($border)
+			$this->Rect($xi,$yi,$w,$h);
+	}
 
-function drawRows($w, $h, $txt, $border=0, $align='J', $fill=false, $maxline=0, $prn=0)
-{
-    $cw=&$this->CurrentFont['cw'];
-    if($w==0)
-        $w=$this->w-$this->rMargin-$this->x;
-    $wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
-    $s=str_replace("\r",'',$txt);
-    $nb=strlen($s);
-    if($nb>0 && $s[$nb-1]=="\n")
-        $nb--;
-    $b=0;
-    if($border)
+	function drawRows($w, $h, $txt, $border=0, $align='J', $fill=false, $maxline=0, $prn=0)
+	{
+		$cw=&$this->CurrentFont['cw'];
+		if($w==0)
+			$w=$this->w-$this->rMargin-$this->x;
+		$wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
+		$s=str_replace("\r",'',$txt);
+		$nb=strlen($s);
+		if($nb>0 && $s[$nb-1]=="\n")
+			$nb--;
+		$b=0;
+		if($border)
+		{
+			if($border==1)
+			{
+				$border='LTRB';
+				$b='LRT';
+				$b2='LR';
+			}
+			else
+			{
+				$b2='';
+				if(is_int(strpos($border,'L')))
+					$b2.='L';
+				if(is_int(strpos($border,'R')))
+					$b2.='R';
+				$b=is_int(strpos($border,'T')) ? $b2.'T' : $b2;
+			}
+		}
+		$sep=-1;
+		$i=0;
+		$j=0;
+		$l=0;
+		$ns=0;
+		$nl=1;
+		while($i<$nb)
+		{
+			//Get next character
+			$c=$s[$i];
+			if($c=="\n")
+			{
+				//Explicit line break
+				if($this->ws>0)
+				{
+					$this->ws=0;
+					if ($prn==1) $this->_out('0 Tw');
+				}
+				if ($prn==1) {
+					$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+				}
+				$i++;
+				$sep=-1;
+				$j=$i;
+				$l=0;
+				$ns=0;
+				$nl++;
+				if($border && $nl==2)
+					$b=$b2;
+				if ( $maxline && $nl > $maxline )
+					return substr($s,$i);
+				continue;
+			}
+			if($c==' ')
+			{
+				$sep=$i;
+				$ls=$l;
+				$ns++;
+			}
+			$l+=$cw[$c];
+			if($l>$wmax)
+			{
+				//Automatic line break
+				if($sep==-1)
+				{
+					if($i==$j)
+						$i++;
+					if($this->ws>0)
+					{
+						$this->ws=0;
+						if ($prn==1) $this->_out('0 Tw');
+					}
+					if ($prn==1) {
+						$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+					}
+				}
+				else
+				{
+					if($align=='J')
+					{
+						$this->ws=($ns>1) ? ($wmax-$ls)/1000*$this->FontSize/($ns-1) : 0;
+						if ($prn==1) $this->_out(sprintf('%.3F Tw',$this->ws*$this->k));
+					}
+					if ($prn==1){
+						$this->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+					}
+					$i=$sep+1;
+				}
+				$sep=-1;
+				$j=$i;
+				$l=0;
+				$ns=0;
+				$nl++;
+				if($border && $nl==2)
+					$b=$b2;
+				if ( $maxline && $nl > $maxline )
+					return substr($s,$i);
+			}
+			else
+				$i++;
+		}
+		//Last chunk
+		if($this->ws>0)
+		{
+			$this->ws=0;
+			if ($prn==1) $this->_out('0 Tw');
+		}
+		if($border && is_int(strpos($border,'B')))
+			$b.='B';
+		if ($prn==1) {
+			$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+		}
+		$this->x=$this->lMargin;
+		return $nl;
+	}
+
+	function RoundedRect($x, $y, $w, $h, $r, $corners = '1234', $style = '')
     {
-        if($border==1)
+        $k = $this->k;
+        $hp = $this->h;
+        if($style=='F')
+            $op='f';
+        elseif($style=='FD' || $style=='DF')
+            $op='B';
+        else
+            $op='S';
+        $MyArc = 4/3 * (sqrt(2) - 1);
+        $this->_out(sprintf('%.2F %.2F m',($x+$r)*$k,($hp-$y)*$k ));
+
+        $xc = $x+$w-$r;
+        $yc = $y+$r;
+        $this->_out(sprintf('%.2F %.2F l', $xc*$k,($hp-$y)*$k ));
+        if (strpos($corners, '2')===false)
+            $this->_out(sprintf('%.2F %.2F l', ($x+$w)*$k,($hp-$y)*$k ));
+        else
+            $this->_Arc($xc + $r*$MyArc, $yc - $r, $xc + $r, $yc - $r*$MyArc, $xc + $r, $yc);
+
+        $xc = $x+$w-$r;
+        $yc = $y+$h-$r;
+        $this->_out(sprintf('%.2F %.2F l',($x+$w)*$k,($hp-$yc)*$k));
+        if (strpos($corners, '3')===false)
+            $this->_out(sprintf('%.2F %.2F l',($x+$w)*$k,($hp-($y+$h))*$k));
+        else
+            $this->_Arc($xc + $r, $yc + $r*$MyArc, $xc + $r*$MyArc, $yc + $r, $xc, $yc + $r);
+
+        $xc = $x+$r;
+        $yc = $y+$h-$r;
+        $this->_out(sprintf('%.2F %.2F l',$xc*$k,($hp-($y+$h))*$k));
+        if (strpos($corners, '4')===false)
+            $this->_out(sprintf('%.2F %.2F l',($x)*$k,($hp-($y+$h))*$k));
+        else
+            $this->_Arc($xc - $r*$MyArc, $yc + $r, $xc - $r, $yc + $r*$MyArc, $xc - $r, $yc);
+
+        $xc = $x+$r ;
+        $yc = $y+$r;
+        $this->_out(sprintf('%.2F %.2F l',($x)*$k,($hp-$yc)*$k ));
+        if (strpos($corners, '1')===false)
         {
-            $border='LTRB';
-            $b='LRT';
-            $b2='LR';
+            $this->_out(sprintf('%.2F %.2F l',($x)*$k,($hp-$y)*$k ));
+            $this->_out(sprintf('%.2F %.2F l',($x+$r)*$k,($hp-$y)*$k ));
         }
         else
-        {
-            $b2='';
-            if(is_int(strpos($border,'L')))
-                $b2.='L';
-            if(is_int(strpos($border,'R')))
-                $b2.='R';
-            $b=is_int(strpos($border,'T')) ? $b2.'T' : $b2;
-        }
+            $this->_Arc($xc - $r, $yc - $r*$MyArc, $xc - $r*$MyArc, $yc - $r, $xc, $yc - $r);
+        $this->_out($op);
     }
-    $sep=-1;
-    $i=0;
-    $j=0;
-    $l=0;
-    $ns=0;
-    $nl=1;
-    while($i<$nb)
+
+    function _Arc($x1, $y1, $x2, $y2, $x3, $y3)
     {
-        //Get next character
-        $c=$s[$i];
-        if($c=="\n")
-        {
-            //Explicit line break
-            if($this->ws>0)
-            {
-                $this->ws=0;
-                if ($prn==1) $this->_out('0 Tw');
-            }
-            if ($prn==1) {
-                $this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
-            }
-            $i++;
-            $sep=-1;
-            $j=$i;
-            $l=0;
-            $ns=0;
-            $nl++;
-            if($border && $nl==2)
-                $b=$b2;
-            if ( $maxline && $nl > $maxline )
-                return substr($s,$i);
-            continue;
-        }
-        if($c==' ')
-        {
-            $sep=$i;
-            $ls=$l;
-            $ns++;
-        }
-        $l+=$cw[$c];
-        if($l>$wmax)
-        {
-            //Automatic line break
-            if($sep==-1)
-            {
-                if($i==$j)
-                    $i++;
-                if($this->ws>0)
-                {
-                    $this->ws=0;
-                    if ($prn==1) $this->_out('0 Tw');
-                }
-                if ($prn==1) {
-                    $this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
-                }
-            }
-            else
-            {
-                if($align=='J')
-                {
-                    $this->ws=($ns>1) ? ($wmax-$ls)/1000*$this->FontSize/($ns-1) : 0;
-                    if ($prn==1) $this->_out(sprintf('%.3F Tw',$this->ws*$this->k));
-                }
-                if ($prn==1){
-                    $this->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
-                }
-                $i=$sep+1;
-            }
-            $sep=-1;
-            $j=$i;
-            $l=0;
-            $ns=0;
-            $nl++;
-            if($border && $nl==2)
-                $b=$b2;
-            if ( $maxline && $nl > $maxline )
-                return substr($s,$i);
-        }
-        else
-            $i++;
+        $h = $this->h;
+        $this->_out(sprintf('%.2F %.2F %.2F %.2F %.2F %.2F c ', $x1*$this->k, ($h-$y1)*$this->k,
+            $x2*$this->k, ($h-$y2)*$this->k, $x3*$this->k, ($h-$y3)*$this->k));
     }
-    //Last chunk
-    if($this->ws>0)
-    {
-        $this->ws=0;
-        if ($prn==1) $this->_out('0 Tw');
-    }
-    if($border && is_int(strpos($border,'B')))
-        $b.='B';
-    if ($prn==1) {
-        $this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
-    }
-    $this->x=$this->lMargin;
-    return $nl;
-}
 
 }
 
@@ -217,167 +288,302 @@ function drawRows($w, $h, $txt, $border=0, $align='J', $fill=false, $maxline=0, 
 $pdf = new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage();
-$pdf->SetFont('helvetica','B',10);
-$pdf->Cell(0,30,$resp_nombres,0,1);
-$pdf->SetFont('helvetica','',10);
-$pdf->Cell(0,-18,$resp_docu,0,1);
-$pdf->Cell(0,35,"Fecha de la prueba: ".$resp_fech_prueba,0,1);
-$pdf->Cell(0,-23,"Prestador: ".$resp_prestador,0,1);
 
-$pdf->SetFont('helvetica','',13);
+$pdf->SetFillColor(231,231,231);
+$pdf->RoundedRect(10, 40, 188, 55, 1, '1234', 'F');
+
+$pdf->SetXY(15,45);
+$pdf->SetFont('helvetica','',10);
+$pdf->drawTextBox($intro_SPE, 183, 37, '', '', false);
+
+$pdf->SetFillColor(31,100,210);
+$pdf->RoundedRect(10, 99, 188, 25, 1, '1234', 'F');
+
+$pdf->SetXY(15,105);
+$pdf->SetFont('helvetica','B',10);
+$pdf->SetTextColor(255,255,255);
+$pdf->Cell(15,0,$resp_nombres,0,1);
+
+$pdf->SetXY(15,109);
+$pdf->SetFont('helvetica','',8);
+$pdf->Cell(15,0,$resp_docu,0,1);
+
+$pdf->SetXY(15,117);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(15,0,"Prestador:",0,1);
+
+$pdf->SetXY(30,117);
+$pdf->SetFont('helvetica','',8);
+$pdf->Cell(15,0,$resp_prestador,0,1);
+
+$pdf->SetXY(150,117);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(15,0,"Fecha de la prueba:",0,1);
+
+$pdf->SetXY(178,117);
+$pdf->SetFont('helvetica','',8);
+$pdf->Cell(15,0,$resp_fech_prueba,0,1);
+
+$pdf->SetFillColor(231,231,231);
+$pdf->RoundedRect(10, 128, 188, 22, 1, '1234', 'F');
+
+$pdf->SetXY(15,132);
+$pdf->SetFont('helvetica','',10);
+$pdf->SetTextColor(0,0,0);
+$pdf->drawTextBox($intro_4B, 183, 37, '', '', false);
+
+$pdf->SetXY(9,160);
+$pdf->SetFont('helvetica','',12);
 $pdf->SetTextColor(33,37,41);
-$pdf->Cell(0,55,$titulo_01,0,1);
+$pdf->Cell(0,0,$titulo_01,0,1);
+
+$pdf->SetXY(9,165);
+$pdf->SetFont('helvetica','',10);
+$pdf->drawTextBox($titulo_01_des_01, 183, 37, '', '', false);
+
+$pdf->SetXY(9,190);
+$pdf->SetFont('helvetica','',12);
+$pdf->SetTextColor(33,37,41);
+$pdf->Cell(0,0,$titulo_02,0,1);
+
+$pdf->SetXY(9,195);
+$pdf->SetFont('helvetica','',10);
+$pdf->drawTextBox($titulo_02_des, 183, 37, '', '', false);
+
+$pdf->AddPage(); //NUEVA PAGINA
+
+$pdf->SetXY(9,40);
+$pdf->SetFont('helvetica','',15);
+$pdf->Cell(0,0,$titulo_01,0,1);
+
+$pdf->SetXY(9,50);
+$pdf->SetFont('helvetica','',10);
+$pdf->drawTextBox($titulo_01_des_02, 183, 37, '', '', false);
 
 //Imagen cerebro
-$pdf->Image('images/cerebro_solo.png',80,95,50);
+$pdf->Image('images/cerebro_solo.png',80,83,50);
 
+$pdf->SetXY(45,88);
 $pdf->SetFont('helvetica','B',12);
-$pdf->SetTextColor(0,0,0);
-$pdf->Cell(79,-23,utf8_decode("Analítico"),0,1,'C',false);
-$pdf->SetFont('helvetica','B',8);
-$pdf->Cell(71,32,utf8_decode("Lógico"),0,1,'C',false);
-$pdf->Cell(74,-23,utf8_decode("Analítico"),0,1,'C',false);
-$pdf->Cell(80,32,utf8_decode("Confrontador"),0,1,'C',false);
-$pdf->Cell(89,-23,utf8_decode("Toma de Decisiones"),0,1,'C',false);
-$pdf->Cell(92.5,32,utf8_decode("Orientado a resultados"),0,1,'C',false);
+$pdf->Cell(0,0,utf8_decode("Analítico"),0,1);
 
+$pdf->SetXY(45,93);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(0,0,utf8_decode("Lógico"),0,1);
+
+$pdf->SetXY(45,97);
+$pdf->Cell(0,0,utf8_decode("Analítico"),0,1);
+
+$pdf->SetXY(45,101);
+$pdf->Cell(0,0,utf8_decode("Confrontador"),0,1);
+
+$pdf->SetXY(45,105);
+$pdf->Cell(0,0,utf8_decode("Toma de Decisiones"),0,1);
+
+$pdf->SetXY(45,109);
+$pdf->Cell(0,0,utf8_decode("Orientado a resultados"),0,1);
+
+$pdf->SetXY(45,124);
 $pdf->SetFont('helvetica','B',12);
-$pdf->SetTextColor(0,0,0);
-$pdf->Cell(79,-4,utf8_decode("Eficiente"),0,1,'C',false);
-$pdf->SetFont('helvetica','B',8);
-$pdf->Cell(75,13,utf8_decode("Ordenado"),0,1,'C',false);
-$pdf->Cell(81,-4,utf8_decode("Procedimental"),0,1,'C',false);
-$pdf->Cell(76,13,utf8_decode("Productivo"),0,1,'C',false);
-$pdf->Cell(75,-4,utf8_decode("Cauteloso"),0,1,'C',false);
-$pdf->Cell(73,13,utf8_decode("Eficiente"),0,1,'C',false);
+$pdf->Cell(0,0,utf8_decode("Eficiente"),0,1);
 
+$pdf->SetXY(45,129);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(0,0,utf8_decode("Ordenado"),0,1);
+
+$pdf->SetXY(45,133);
+$pdf->Cell(0,0,utf8_decode("Procedimental"),0,1);
+
+$pdf->SetXY(45,137);
+$pdf->Cell(0,0,utf8_decode("Productivo"),0,1);
+
+$pdf->SetXY(45,141);
+$pdf->Cell(0,0,utf8_decode("Cauteloso"),0,1);
+
+$pdf->SetXY(45,145);
+$pdf->Cell(0,0,utf8_decode("Eficiente"),0,1);
+
+$pdf->SetXY(133,88);
 $pdf->SetFont('helvetica','B',12);
-$pdf->SetTextColor(0,0,0);
-$pdf->Cell(279,-130,utf8_decode("Creativo"),0,1,'C',false);
-$pdf->SetFont('helvetica','B',8);
-$pdf->Cell(277,139,utf8_decode("Visionario"),0,1,'C',false);
-$pdf->Cell(277,-130,utf8_decode("Innovador"),0,1,'C',false);
-$pdf->Cell(277.5,139,utf8_decode("Metafórico"),0,1,'C',false);
-$pdf->Cell(282.5,-130,utf8_decode("Toma Riesgos"),0,1,'C',false);
+$pdf->Cell(0,0,utf8_decode("Creativo"),0,1);
 
+$pdf->SetXY(133,93);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(0,0,utf8_decode("Visionario"),0,1);
+
+$pdf->SetXY(133,97);
+$pdf->Cell(0,0,utf8_decode("Innovador"),0,1);
+
+$pdf->SetXY(133,101);
+$pdf->Cell(0,0,utf8_decode("Metafórico"),0,1);
+
+$pdf->SetXY(133,105);
+$pdf->Cell(0,0,utf8_decode("Toma Riesgos"),0,1);
+
+$pdf->SetXY(133,124);
 $pdf->SetFont('helvetica','B',12);
-$pdf->SetTextColor(0,0,0);
-$pdf->Cell(282,166,utf8_decode("Empático"),0,1,'C',false);
+$pdf->Cell(0,0,utf8_decode("Empático"),0,1);
+
+$pdf->SetXY(133,129);
 $pdf->SetFont('helvetica','B',8);
-$pdf->Cell(294,-157,utf8_decode("Sentido de Pertenencia"),0,1,'C',false);
-$pdf->Cell(281,166,utf8_decode("Armonizador"),0,1,'C',false);
-$pdf->Cell(279,-157,utf8_decode("Conciliador"),0,1,'C',false);
-$pdf->Cell(276,166,utf8_decode("Sensitivo"),0,1,'C',false);
-$pdf->Cell(276.5,-157,utf8_decode("Empático"),0,1,'C',false);
+$pdf->Cell(0,0,utf8_decode("Sentido de Pertenencia"),0,1);
 
-$pdf->SetFont('helvetica','',13);
-$pdf->SetTextColor(33,37,41);
-$pdf->Cell(0,190,$titulo_02,0,1);
+$pdf->SetXY(133,133);
+$pdf->Cell(0,0,utf8_decode("Armonizador"),0,1);
 
-$pdf->Image("images/perfil_$num_perfil.png",40,190,50);
-$pdf->SetFont('helvetica','B',10);
-$pdf->Cell(210,-157,$perfil,0,1,'C',false);
-$pdf->SetFont('helvetica','',10);
-$pdf->SetXY(100.5,196);
-$pdf->drawTextBox($desc_perfil, 85, 50, '', '', false);
+$pdf->SetXY(133,137);
+$pdf->Cell(0,0,utf8_decode("Conciliador"),0,1);
 
-$pdf->AddPage();
+$pdf->SetXY(133,141);
+$pdf->Cell(0,0,utf8_decode("Sensitivo"),0,1);
 
-$pdf->SetFont('helvetica','',13);
-$pdf->SetTextColor(33,37,41);
-$pdf->Cell(0,30,$titulo_03,0,1);
+$pdf->SetXY(133,145);
+$pdf->Cell(0,0,utf8_decode("Empático"),0,1);
 
-/*Gráfico de barras*/
+//Gráfico de barras
 $img = file_get_contents($actual_link."respuesta_graf_barras.php?ei=$ei&ai=$ai&ad=$ad&ed=$ed");
 $pic = 'data://text/plain;base64,' . base64_encode($img);
-$pdf->Image($pic, 40, 55, 135, 72, 'jpg');
+$pdf->Image($pic, 40, 151, 135, 72, 'jpg');
 
-/*Tabla de competencias*/
-$pdf->Ln(80);
-$pdf->SetFillColor(193,229,252); // Background color
+//Tabla de competencias
+$pdf->SetFillColor(255,255,255); // Background color
 $pdf->SetFont('helvetica','B',9);
-$pdf->SetTextColor(12,84,96);
-$pdf->SetXY(40,130);
-$pdf->Cell(26,10,utf8_decode("Competencias"),0,1,'C',true);
-$pdf->SetXY(66,130);
-$pdf->Cell(26,10,utf8_decode("Analítico EI"),0,1,'C',true);
-$pdf->SetXY(92,130);
-$pdf->Cell(26,10,utf8_decode("Eficiente AI"),0,1,'C',true);
-$pdf->SetXY(118,130);
-$pdf->Cell(26,10,utf8_decode("Empático AD"),0,1,'C',true);
-$pdf->SetXY(144,130);
-$pdf->Cell(25,10,utf8_decode("Creativo ED"),0,1,'C',true);
 
-$pdf->SetFillColor(242,242,242); // Background color
+$pdf->SetDrawColor(100,100,100);
+$pdf->Line(40, 223, 168, 223);
+$pdf->SetXY(40,223);
+$pdf->Cell(26,8,utf8_decode("Competencias"),0,1,'C',true);
+$pdf->SetXY(66,223);
+$pdf->Cell(26,8,utf8_decode("Analítico EI"),0,1,'C',true);
+$pdf->SetXY(92,223);
+$pdf->Cell(26,8,utf8_decode("Eficiente AI"),0,1,'C',true);
+$pdf->SetXY(118,223);
+$pdf->Cell(26,8,utf8_decode("Empático AD"),0,1,'C',true);
+$pdf->SetXY(144,223);
+$pdf->Cell(25,8,utf8_decode("Creativo ED"),0,1,'C',true);
+
+$pdf->SetFillColor(184,218,255); // Background color
 $pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->SetXY(40,140);
-$pdf->Cell(26,10,utf8_decode("Joven"),0,1,'C',true);
-$pdf->SetXY(66,140);
-$pdf->Cell(26,10,utf8_decode($joven_ei),0,1,'C',true);
-$pdf->SetXY(92,140);
-$pdf->Cell(26,10,utf8_decode($joven_ai),0,1,'C',true);
-$pdf->SetXY(118,140);        
-$pdf->Cell(26,10,utf8_decode($joven_ad),0,1,'C',true);
-$pdf->SetXY(144,140);        
-$pdf->Cell(25,10,utf8_decode($joven_ed),0,1,'C',true);
+$pdf->SetXY(40,231);
+$pdf->Cell(26,8,utf8_decode("Joven"),0,1,'C',true);
+$pdf->SetXY(66,231);
+$pdf->Cell(26,8,utf8_decode($joven_ei),0,1,'C',true);
+$pdf->SetXY(92,231);
+$pdf->Cell(26,8,utf8_decode($joven_ai),0,1,'C',true);
+$pdf->SetXY(118,231);        
+$pdf->Cell(26,8,utf8_decode($joven_ad),0,1,'C',true);
+$pdf->SetXY(144,231);        
+$pdf->Cell(25,8,utf8_decode($joven_ed),0,1,'C',true);
 
-$pdf->SetFillColor(255,255,255); // Background color
+$pdf->SetFillColor(184,218,255); // Background color
 $pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->SetXY(40,150);
-$pdf->Cell(26,10,utf8_decode("Adulto"),0,1,'C',true);
-$pdf->SetXY(66,150);
-$pdf->Cell(26,10,utf8_decode($ei),0,1,'C',true);
-$pdf->SetXY(92,150);
-$pdf->Cell(26,10,utf8_decode($ai),0,1,'C',true);
-$pdf->SetXY(118,150);
-$pdf->Cell(26,10,utf8_decode($ad),0,1,'C',true);
-$pdf->SetXY(144,150);
-$pdf->Cell(25,10,utf8_decode($ed),0,1,'C',true);
+$pdf->SetXY(40,239);
+$pdf->Cell(26,8,utf8_decode("Adulto"),0,1,'C',true);
+$pdf->SetXY(66,239);
+$pdf->Cell(26,8,utf8_decode($ei),0,1,'C',true);
+$pdf->SetXY(92,239);
+$pdf->Cell(26,8,utf8_decode($ai),0,1,'C',true);
+$pdf->SetXY(118,239);
+$pdf->Cell(26,8,utf8_decode($ad),0,1,'C',true);
+$pdf->SetXY(144,239);
+$pdf->Cell(25,8,utf8_decode($ed),0,1,'C',true);
 
-$pdf->SetFillColor(242,242,242); // Background color
+$pdf->SetFillColor(0,123,255); // Background color
 $pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->SetXY(40,160);
-$pdf->Cell(26,10,utf8_decode("Tiempo Libre"),0,1,'C',true);
-$pdf->SetXY(66,160);
-$pdf->Cell(26,10,utf8_decode($libre_ei),0,1,'C',true);
-$pdf->SetXY(92,160);        
-$pdf->Cell(26,10,utf8_decode($libre_ai),0,1,'C',true);
-$pdf->SetXY(118,160);       
-$pdf->Cell(26,10,utf8_decode($libre_ad),0,1,'C',true);
-$pdf->SetXY(144,160);       
-$pdf->Cell(25,10,utf8_decode($libre_ed),0,1,'C',true);
+$pdf->SetXY(40,247);
+$pdf->Cell(26,8,utf8_decode("Tiempo Libre"),0,1,'C',true);
+$pdf->SetXY(66,247);
+$pdf->Cell(26,8,utf8_decode($libre_ei),0,1,'C',true);
+$pdf->SetXY(92,247);        
+$pdf->Cell(26,8,utf8_decode($libre_ai),0,1,'C',true);
+$pdf->SetXY(118,247);       
+$pdf->Cell(26,8,utf8_decode($libre_ad),0,1,'C',true);
+$pdf->SetXY(144,247);       
+$pdf->Cell(25,8,utf8_decode($libre_ed),0,1,'C',true);
 
-$pdf->SetFillColor(255,255,255); // Background color
+$pdf->SetFillColor(0,123,255); // Background color
 $pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->SetXY(40,170);
-$pdf->Cell(26,10,utf8_decode("Laboral"),0,1,'C',true);
-$pdf->SetXY(66,170);
-$pdf->Cell(26,10,utf8_decode($laboral_ei),0,1,'C',true);
-$pdf->SetXY(92,170);        
-$pdf->Cell(26,10,utf8_decode($laboral_ai),0,1,'C',true);
-$pdf->SetXY(118,170);       
-$pdf->Cell(26,10,utf8_decode($laboral_ad),0,1,'C',true);
-$pdf->SetXY(144,170);       
-$pdf->Cell(25,10,utf8_decode($laboral_ed),0,1,'C',true);
+$pdf->SetXY(40,255);
+$pdf->Cell(26,8,utf8_decode("Laboral"),0,1,'C',true);
+$pdf->SetXY(66,255);
+$pdf->Cell(26,8,utf8_decode($laboral_ei),0,1,'C',true);
+$pdf->SetXY(92,255);        
+$pdf->Cell(26,8,utf8_decode($laboral_ai),0,1,'C',true);
+$pdf->SetXY(118,255);       
+$pdf->Cell(26,8,utf8_decode($laboral_ad),0,1,'C',true);
+$pdf->SetXY(144,255);       
+$pdf->Cell(25,8,utf8_decode($laboral_ed),0,1,'C',true);
 
-$pdf->SetFillColor(242,242,242); // Background color
+$pdf->SetFillColor(0,123,255); // Background color
 $pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->SetXY(40,180);
-$pdf->Cell(26,10,utf8_decode("Autopercepción"),0,1,'C',true);
-$pdf->SetXY(66,180);
-$pdf->Cell(26,10,utf8_decode($auto_ei),0,1,'C',true);
-$pdf->SetXY(92,180);        
-$pdf->Cell(26,10,utf8_decode($auto_ai),0,1,'C',true);
-$pdf->SetXY(118,180);       
-$pdf->Cell(26,10,utf8_decode($auto_ad),0,1,'C',true);
-$pdf->SetXY(144,180);       
-$pdf->Cell(25,10,utf8_decode($auto_ed),0,1,'C',true);
+$pdf->SetXY(40,263);
+$pdf->Cell(26,8,utf8_decode("Autopercepción"),0,1,'C',true);
+$pdf->SetXY(66,263);
+$pdf->Cell(26,8,utf8_decode($auto_ei),0,1,'C',true);
+$pdf->SetXY(92,263);        
+$pdf->Cell(26,8,utf8_decode($auto_ai),0,1,'C',true);
+$pdf->SetXY(118,263);       
+$pdf->Cell(26,8,utf8_decode($auto_ad),0,1,'C',true);
+$pdf->SetXY(144,263);       
+$pdf->Cell(25,8,utf8_decode($auto_ed),0,1,'C',true);
+
+$pdf->AddPage(); //NUEVA PAGINA
+
+$pdf->SetXY(9,40);
+$pdf->SetFont('helvetica','',15);
+$pdf->Cell(0,0,$titulo_02,0,1);
+
+$pdf->SetFillColor(255,255,255);
+$pdf->SetDrawColor(200,200,200);
+$pdf->RoundedRect(10, 55, 188, 65, 1, '1234', 'DF');
+
+$pdf->Image("images/estilo_$num_estilo.png",20,62,50);
+
+$pdf->SetXY(70,45);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(15,35,"NEUROFORTALEZA: $estilo",0,1);
+
+$pdf->SetXY(70,68);
+$pdf->SetFont('helvetica','',10);
+$pdf->SetTextColor(0,0,0);
+$pdf->drawTextBox($estilo_desc, 125, 37, '', '', false);
+
+$pdf->SetFillColor(255,255,255);
+$pdf->SetDrawColor(200,200,200);
+$pdf->RoundedRect(10, 125, 188, 65, 1, '1234', 'DF');
+
+$pdf->Image("images/opuesto_$num_opuesto.png",20,132,50);
+
+$pdf->SetXY(70,120);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(15,25,"NEURODEBILIDAD: $opuesto",0,1);
+
+$pdf->SetXY(70,138);
+$pdf->SetFont('helvetica','',10);
+$pdf->SetTextColor(0,0,0);
+$pdf->drawTextBox($opuesto_desc, 125, 37, '', '', false);
+
+$pdf->SetFillColor(255,255,255);
+$pdf->SetDrawColor(200,200,200);
+$pdf->RoundedRect(10, 195, 188, 65, 1, '1234', 'DF');
+
+$pdf->Image("images/perfil_$num_perfil.png",20,202,50);
+
+$pdf->SetXY(70,190);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(15,25,"PERFIL DE COMPETENCIAS: $perfil",0,1);
+
+$pdf->SetXY(70,208);
+$pdf->SetFont('helvetica','',10);
+$pdf->SetTextColor(0,0,0);
+$pdf->drawTextBox($perfil_desc, 125, 37, '', '', false);
 
 $dir = "C:/xampp/htdocs/prueba_performance/archivos/";
 $pdf->Output($dir.$resp_docu.".pdf",'F');
+
 ?>

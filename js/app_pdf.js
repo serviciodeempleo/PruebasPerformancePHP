@@ -1,12 +1,25 @@
 $(document).ready(function(){
 	$("#btn_crear_pdf").click(function(){
+		var intro_SPE = $("#intro_SPE").val();
+		var intro_4B = $("#intro_4B").val();		
+		var titulo_01 = $("#titulo_01").val();
+		var titulo_01_des_01 = $("#titulo_01_des_01").val();
+		var titulo_01_des_02 = $("#titulo_01_des_02").val();	
+		var titulo_02 = $("#titulo_02").val();
+		var titulo_02_des = $("#titulo_02_des").val();
 		var resp_nombres = $("#resp_nombres").val();
 		var resp_docu = $("#resp_docu").val();
 		var resp_fech_prueba = $("#resp_fech_prueba").val();
-		var resp_prestador = $("#resp_prestador").val();
+		var resp_prestador = $("#resp_prestador").val();		
+		var num_estilo = $("#num_estilo").val();
+		var estilo = $("#estilo").val();
+		var estilo_desc = $("#estilo_desc").val();		
+		var num_opuesto = $("#num_opuesto").val();
+		var opuesto = $("#opuesto").val();
+		var opuesto_desc = $("#opuesto_desc").val();		
 		var num_perfil = $("#num_perfil").val();
 		var perfil = $("#perfil").val();
-		var desc_perfil = $("#desc_perfil").val();
+		var perfil_desc = $("#perfil_desc").val();		
 		var ei = $("#ei").val();
 		var ai = $("#ai").val();
 		var ad = $("#ad").val();
@@ -29,13 +42,26 @@ $(document).ready(function(){
 		var auto_ed = $("#auto_ed").val();
 		
 		variables = { 
+			intro_SPE:intro_SPE,
+			intro_4B:intro_4B,
+			titulo_01:titulo_01,
+			titulo_01_des_01:titulo_01_des_01,
+			titulo_01_des_02:titulo_01_des_02,
+			titulo_02:titulo_02,
+			titulo_02_des:titulo_02_des,
 			resp_nombres:resp_nombres,
 			resp_docu:resp_docu,
 			resp_fech_prueba:resp_fech_prueba,
-			resp_prestador:resp_prestador,
+			resp_prestador:resp_prestador,			
+			num_estilo:num_estilo,
+			estilo:estilo,
+			estilo_desc:estilo_desc,
+			num_opuesto:num_opuesto,
+			opuesto:opuesto,
+			opuesto_desc:opuesto_desc,
 			num_perfil:num_perfil,
 			perfil:perfil,
-			desc_perfil:desc_perfil,
+			perfil_desc:perfil_desc,
 			ei:ei,
 			ai:ai,
 			ad:ad,
@@ -63,7 +89,8 @@ $(document).ready(function(){
             url: 'respuesta_pdf.php',
             data: variables,
             success: function(result) {
-                $('#respuesta').html(result);
+                
+				$('#respuesta').html(result);
 				
 				var req = new XMLHttpRequest();
 				req.open("GET", "archivos/"+resp_docu+".pdf", true);
@@ -91,6 +118,7 @@ $(document).ready(function(){
 						alert('Ocurrió un error, por favor intente de nuevo.');
 					}	
 				});
+				
             },
             error: function() {
                 alert('Ocurrió un error, por favor intente de nuevo.');
