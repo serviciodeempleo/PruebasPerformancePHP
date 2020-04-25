@@ -14,6 +14,9 @@ $(document).ready(function(){
 		var num_estilo = $("#num_estilo").val();
 		var estilo = $("#estilo").val();
 		var estilo_desc = $("#estilo_desc").val();		
+		var estilo_desc_general = $("#estilo_desc_general").val();		
+		var estilo_desc_adjetivo = $("#estilo_desc_adjetivo").val();		
+		var estilo_desc_decision = $("#estilo_desc_decision").val();		
 		var num_opuesto = $("#num_opuesto").val();
 		var opuesto = $("#opuesto").val();
 		var opuesto_desc = $("#opuesto_desc").val();		
@@ -56,6 +59,9 @@ $(document).ready(function(){
 			num_estilo:num_estilo,
 			estilo:estilo,
 			estilo_desc:estilo_desc,
+			estilo_desc_general:estilo_desc_general,
+			estilo_desc_adjetivo:estilo_desc_adjetivo,
+			estilo_desc_decision:estilo_desc_decision,
 			num_opuesto:num_opuesto,
 			opuesto:opuesto,
 			opuesto_desc:opuesto_desc,

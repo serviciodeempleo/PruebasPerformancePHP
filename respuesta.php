@@ -1,4 +1,4 @@
-<script src="js/app_pdf.js"></script>
+<script src="js/app_pdf.js?v=<?=filemtime('js/app_pdf.js');?>"></script>
 <?php
 include('conf.ini');
 
@@ -46,8 +46,13 @@ try {
 	
 	//Consulta nombres y apellidos del candidato
 	if(($num_cedula != "")&&($correo_e == "")){
-		$consulta = "SELECT a.id_buscador, a.nombre, a.apellido, b.tipo_documento, a.documento, a.fecha_prueba,
-		concat(c.nombre,' ',c.apellido) AS prestador
+		$consulta = "SELECT a.id_buscador
+		, a.nombre
+		, a.apellido
+		, b.tipo_documento
+		, a.documento
+		, a.fecha_prueba
+		, concat(c.nombre,' ',c.apellido) AS prestador
 		FROM buscador a
 		INNER JOIN tipo_documento b
 		ON a.id_tipo_documento = b.id_tipo_documento
@@ -56,8 +61,13 @@ try {
 		WHERE a.documento = '$num_cedula'";
 	}
 	if(($num_cedula == "")&&($correo_e != "")){
-		$consulta = "SELECT a.id_buscador, a.nombre, a.apellido, b.tipo_documento, a.documento, a.fecha_prueba,
-		concat(c.nombre,' ',c.apellido) AS prestador
+		$consulta = "SELECT a.id_buscador
+		, a.nombre
+		, a.apellido
+		, b.tipo_documento
+		, a.documento
+		, a.fecha_prueba
+		, concat(c.nombre,' ',c.apellido) AS prestador
 		FROM buscador a
 		INNER JOIN tipo_documento b
 		ON a.id_tipo_documento = b.id_tipo_documento
@@ -66,8 +76,13 @@ try {
 		WHERE a.email = '$correo_e'";
 	}
 	if(($num_cedula != "")&&($correo_e != "")){
-		$consulta = "SELECT a.id_buscador, a.nombre, a.apellido, b.tipo_documento, a.documento, a.fecha_prueba,
-		concat(c.nombre,' ',c.apellido) AS prestador
+		$consulta = "SELECT a.id_buscador
+		, a.nombre
+		, a.apellido
+		, b.tipo_documento
+		, a.documento
+		, a.fecha_prueba
+		, concat(c.nombre,' ',c.apellido) AS prestador
 		FROM buscador a
 		INNER JOIN tipo_documento b
 		ON a.id_tipo_documento = b.id_tipo_documento
@@ -92,7 +107,12 @@ try {
 		echo "No se encuentran resultados.";
 	}
 	
-	$consulta1 = "SELECT a.ei, a.ai, a.ad, a.ed, a.id_estilo, RIGHT(CONCAT('00',a.id_perfil),2) AS num_perfil
+	$consulta1 = "SELECT a.ei
+	, a.ai
+	, a.ad
+	, a.ed
+	, a.id_estilo
+	, RIGHT(CONCAT('00',a.id_perfil),2) AS num_perfil
 	FROM resultado_buscador a
 	WHERE a.id_buscador = '$id_buscador'";
 	$result1 = $conn->query($consulta1);
@@ -108,7 +128,8 @@ try {
 		}
 	}
 	
-	$consulta2 = "SELECT a.perfil, a.desc_perfil
+	$consulta2 = "SELECT a.perfil
+	, a.desc_perfil
 	FROM perfil a
 	WHERE a.id_perfil = '$num_perfil'";
 	$result2 = $conn->query($consulta2);
@@ -120,7 +141,13 @@ try {
 		}
 	}
 	
-	$consulta3 = "SELECT a.estilo, a.opuesto, a.estilo_desc, a.opuesto_desc
+	$consulta3 = "SELECT a.estilo
+	, a.opuesto
+	, a.estilo_desc
+	, a.estilo_desc_general
+	, a.estilo_desc_adjetivo
+	, a.estilo_desc_decision
+	, a.opuesto_desc
 	FROM estilo a
 	WHERE a.id_estilo = '$id_estilo'";
 	$result3 = $conn->query($consulta3);
@@ -132,14 +159,29 @@ try {
 			$num_opuesto = $row3['opuesto'];	
 			$opuesto = $row3['opuesto'];
 			$estilo_desc = $row3['estilo_desc'];	
+			$estilo_desc_general = $row3['estilo_desc_general'];	
+			$estilo_desc_adjetivo = $row3['estilo_desc_adjetivo'];	
+			$estilo_desc_decision = $row3['estilo_desc_decision'];	
 			$opuesto_desc = $row3['opuesto_desc'];	
 		}
 	}
 	
-	$consulta4 = "SELECT a.joven_ei, a.joven_ai, a.joven_ad, a.joven_ed,
-	a.libre_ei, a.libre_ai, a.libre_ad, a.libre_ed,
-	a.laboral_ei, a.laboral_ai, a.laboral_ad, a.laboral_ed,
-	a.auto_ei, a.auto_ai, a.auto_ad, a.auto_ed
+	$consulta4 = "SELECT a.joven_ei
+	, a.joven_ai
+	, a.joven_ad
+	, a.joven_ed
+	, a.libre_ei
+	, a.libre_ai
+	, a.libre_ad
+	, a.libre_ed
+	, a.laboral_ei
+	, a.laboral_ai
+	, a.laboral_ad
+	, a.laboral_ed
+	, a.auto_ei
+	, a.auto_ai
+	, a.auto_ad
+	, a.auto_ed
 	FROM resultado_buscador a
 	WHERE a.id_buscador = '$id_buscador'";
 	$result4 = $conn->query($consulta4);
@@ -300,14 +342,37 @@ try {
 			<div class="row mt-3"></div>
 			
 			<div class="border row text-center shadow-sm rounded-lg p-3">
-				<div class="col-3 text-right">
-					<img class="center-block" alt="Perfil de competencia" src="images/estilo_<?=$num_estilo?>.png?v=<?=$v_cok?>" width="200" height="200">
-				</div>
-				<div class="col text-left">
-					<p><strong>NEUROFORTALEZA: <?php echo $estilo; ?></strong></p>
-					<p>
-					<?php echo $estilo_desc; ?>					
-					</p>
+				<div class="row">
+					<div class="col-3 text-right">
+						<img class="center-block" alt="Perfil de competencia" src="images/estilo_<?=$num_estilo?>.png?v=<?=$v_cok?>" width="200" height="200">
+					</div>
+					<div class="col text-left">
+						<p><strong>NEUROFORTALEZA: <?php echo $estilo; ?></strong></p>
+						<p>
+						<?php echo $estilo_desc; ?>					
+						</p>
+					</div>
+					<div class="w-100"></div>
+					<div class="col-3 text-right">
+						<p><strong>Descriptor General:</strong></p>
+					</div>
+					<div class="col text-left">
+						<p><?=$estilo_desc_general?></p>
+					</div>
+					<div class="w-100"></div>
+					<div class="col-3 text-right">
+						<p><strong>Adjetivos que lo describen:</strong></p>
+					</div>
+					<div class="col text-left">
+						<p><?=$estilo_desc_adjetivo?></p>
+					</div>
+					<div class="w-100"></div>
+					<div class="col-3 text-right">
+						<p><strong>Toma de decisión:</strong></p>
+					</div>
+					<div class="col text-left">
+						<p><?=$estilo_desc_decision?></p>
+					</div>
 				</div>
 			</div>
 			
@@ -355,6 +420,9 @@ try {
 		<input type="hidden" id="num_estilo" value="<?php echo $num_estilo;?>" />
 		<input type="hidden" id="estilo" value="<?php echo $estilo;?>" />
 		<input type="hidden" id="estilo_desc" value="<?php echo $estilo_desc;?>" />		
+		<input type="hidden" id="estilo_desc_general" value="<?php echo $estilo_desc_general;?>" />		
+		<input type="hidden" id="estilo_desc_adjetivo" value="<?php echo $estilo_desc_adjetivo;?>" />		
+		<input type="hidden" id="estilo_desc_decision" value="<?php echo $estilo_desc_decision;?>" />		
 		<input type="hidden" id="num_opuesto" value="<?php echo $num_opuesto;?>" />
 		<input type="hidden" id="opuesto" value="<?php echo $opuesto;?>" />
 		<input type="hidden" id="opuesto_desc" value="<?php echo $opuesto_desc;?>" />		

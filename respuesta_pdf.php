@@ -23,6 +23,9 @@ if(isset($_POST["resp_prestador"])){ $resp_prestador = utf8_decode($_POST["resp_
 if(isset($_POST["num_estilo"])){ $num_estilo = utf8_decode($_POST["num_estilo"]); }else{ $num_estilo = ""; }
 if(isset($_POST["estilo"])){ $estilo = utf8_decode($_POST["estilo"]); }else{ $estilo = ""; }
 if(isset($_POST["estilo_desc"])){ $estilo_desc = utf8_decode($_POST["estilo_desc"]); }else{ $estilo_desc = ""; }
+if(isset($_POST["estilo_desc_general"])){ $estilo_desc_general = utf8_decode($_POST["estilo_desc_general"]); }else{ $estilo_desc_general = ""; }
+if(isset($_POST["estilo_desc_adjetivo"])){ $estilo_desc_adjetivo = utf8_decode($_POST["estilo_desc_adjetivo"]); }else{ $estilo_desc_adjetivo = ""; }
+if(isset($_POST["estilo_desc_decision"])){ $estilo_desc_decision = utf8_decode($_POST["estilo_desc_decision"]); }else{ $estilo_desc_decision = ""; }
 if(isset($_POST["num_opuesto"])){ $num_opuesto = utf8_decode($_POST["num_opuesto"]); }else{ $num_opuesto = ""; }
 if(isset($_POST["opuesto"])){ $opuesto = utf8_decode($_POST["opuesto"]); }else{ $opuesto = ""; }
 if(isset($_POST["opuesto_desc"])){ $opuesto_desc = utf8_decode($_POST["opuesto_desc"]); }else{ $opuesto_desc = ""; }
@@ -540,48 +543,73 @@ $pdf->Cell(0,0,$titulo_02,0,1);
 
 $pdf->SetFillColor(255,255,255);
 $pdf->SetDrawColor(200,200,200);
-$pdf->RoundedRect(10, 55, 188, 65, 1, '1234', 'DF');
+$pdf->RoundedRect(10, 50, 188, 100, 1, '1234', 'DF');
 
-$pdf->Image("images/estilo_$num_estilo.png",20,62,50);
+$pdf->Image("images/estilo_$num_estilo.png",5,62,50);
 
-$pdf->SetXY(70,45);
+$pdf->SetXY(50,40);
 $pdf->SetFont('helvetica','B',8);
 $pdf->Cell(15,35,"NEUROFORTALEZA: $estilo",0,1);
 
-$pdf->SetXY(70,68);
-$pdf->SetFont('helvetica','',10);
+$pdf->SetXY(50,63);
+$pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->drawTextBox($estilo_desc, 125, 37, '', '', false);
+$pdf->drawTextBox($estilo_desc, 145, 45, '', '', false);
+
+$pdf->SetXY(22,123);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(0,0,"Descriptor General:",0,1);
+
+$pdf->SetXY(50,121);
+$pdf->SetFont('helvetica','',9);
+$pdf->SetFont('helvetica','',9);
+$pdf->drawTextBox($estilo_desc_general, 145, 2, '', '', false); 
+
+$pdf->SetXY(11,131);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(0,0,"Adjetivos que lo describen:",0,1);
+
+$pdf->SetXY(50,129);
+$pdf->SetFont('helvetica','',9);
+$pdf->drawTextBox($estilo_desc_adjetivo, 145, 2, '', '', false); 
+
+$pdf->SetXY(23,139);
+$pdf->SetFont('helvetica','B',8);
+$pdf->Cell(0,0,utf8_decode("Toma de decisión:"),0,1);
+
+$pdf->SetXY(50,137);
+$pdf->SetFont('helvetica','',9);
+$pdf->drawTextBox($estilo_desc_decision, 145, 2, '', '', false);
 
 $pdf->SetFillColor(255,255,255);
 $pdf->SetDrawColor(200,200,200);
-$pdf->RoundedRect(10, 125, 188, 65, 1, '1234', 'DF');
+$pdf->RoundedRect(10, 155, 188, 55, 1, '1234', 'DF');
 
-$pdf->Image("images/opuesto_$num_opuesto.png",20,132,50);
+$pdf->Image("images/opuesto_$num_opuesto.png",5,161,50);
 
-$pdf->SetXY(70,120);
+$pdf->SetXY(50,150);
 $pdf->SetFont('helvetica','B',8);
 $pdf->Cell(15,25,"NEURODEBILIDAD: $opuesto",0,1);
 
-$pdf->SetXY(70,138);
-$pdf->SetFont('helvetica','',10);
+$pdf->SetXY(50,167);
+$pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->drawTextBox($opuesto_desc, 125, 37, '', '', false);
+$pdf->drawTextBox($opuesto_desc, 145, 30, '', '', false);
 
 $pdf->SetFillColor(255,255,255);
 $pdf->SetDrawColor(200,200,200);
-$pdf->RoundedRect(10, 195, 188, 65, 1, '1234', 'DF');
+$pdf->RoundedRect(10, 215, 188, 62, 1, '1234', 'DF');
 
-$pdf->Image("images/perfil_$num_perfil.png",20,202,50);
+$pdf->Image("images/perfil_$num_perfil.png",5,222,50);
 
-$pdf->SetXY(70,190);
+$pdf->SetXY(50,210);
 $pdf->SetFont('helvetica','B',8);
 $pdf->Cell(15,25,"PERFIL DE COMPETENCIAS: $perfil",0,1);
 
-$pdf->SetXY(70,208);
-$pdf->SetFont('helvetica','',10);
+$pdf->SetXY(50,227);
+$pdf->SetFont('helvetica','',9);
 $pdf->SetTextColor(0,0,0);
-$pdf->drawTextBox($perfil_desc, 125, 37, '', '', false);
+$pdf->drawTextBox($perfil_desc, 145, 35, '', '', false);
 
 $dir = "C:/xampp/htdocs/prueba_performance/archivos/";
 $pdf->Output($dir.$resp_docu.".pdf",'F');
